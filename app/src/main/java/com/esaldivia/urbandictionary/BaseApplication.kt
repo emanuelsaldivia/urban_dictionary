@@ -1,6 +1,6 @@
 package com.esaldivia.urbandictionary
 
-import com.esaldivia.urbandictionary.di.DaggerAppComponent
+import com.esaldivia.urbandictionary.di.components.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.support.DaggerApplication
 

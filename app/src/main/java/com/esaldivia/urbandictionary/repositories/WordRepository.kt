@@ -1,4 +1,7 @@
 package com.esaldivia.urbandictionary.repositories
 
-class WordRepository {
+import com.esaldivia.urbandictionary.network.DictionaryApi
+import javax.inject.Inject
+
+class WordRepository @Inject constructor(val dictionaryApi: DictionaryApi){
 }
