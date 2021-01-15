@@ -7,7 +7,7 @@ import dagger.android.ContributesAndroidInjector
 @Module
 abstract class ActivityBuildersModule {
 
-    @ContributesAndroidInjector
-    abstract fun contributeSearchItemsActivity(): DicitionaryActivity
+    @ContributesAndroidInjector(modules = [DictionaryViewModelModule::class])
+    abstract fun contributeDictionaryActivity(): DicitionaryActivity
 
 }
