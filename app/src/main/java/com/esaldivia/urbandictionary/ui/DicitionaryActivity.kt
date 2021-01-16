@@ -1,19 +1,22 @@
 package com.esaldivia.urbandictionary.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.esaldivia.urbandictionary.R
 import com.esaldivia.urbandictionary.models.Word
+import com.esaldivia.urbandictionary.network.Status
 import com.esaldivia.urbandictionary.viewmodels.DictionaryViewModel
 import com.esaldivia.urbandictionary.viewmodels.ViewModelProviderFactory
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_dicitionary.*
 import javax.inject.Inject
 
-class DicitionaryActivity : AppCompatActivity() {
+class DicitionaryActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
@@ -29,43 +32,58 @@ class DicitionaryActivity : AppCompatActivity() {
     }
 
     fun setupSearchView() {
-        searchView.queryHint = applicationContext.getString(R.string.search_title)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                TODO("Not yet implemented")
-                // todo search
+                search(query!!)
+                return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                TODO("Not yet implemented")
-                // todo hint with local db
+                if (newText.isNullOrBlank()) {
+                    setupRecyclerView()
+                }
+                return true
             }
         })
+
     }
 
     fun setupRecyclerView() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(baseContext)
 
-            adapter = WordListAdapter(
-                    arrayListOf(Word(1, "word1", "definition1", "author1", 10, 10),
-                    Word(2, "word2", "definition2", "author2", 10, 10),
-                    Word(3, "word3", "definition3", "author3", 10, 10),
-                    Word(4, "word4", "definition4", "author4", 10, 10),
-                    Word(5, "word5", "definition5", "author5", 10, 10),
-                    Word(6, "word6", "definition6", "author6", 10, 10),
-                    Word(7, "word7", "definition7", "author7", 10, 10),
-                    Word(8, "word8", "definition8", "author8", 10, 10),
-                    Word(9, "word9", "definition9", "author9", 10, 10)))
+            adapter = WordListAdapter(arrayListOf())
         }
     }
 
-    fun setupObservers() {
-        viewModel.wordDefinitionsLiveData.observe(this, Observer {
-            it?.let {
-                retrieveList(it)
+    fun setupObservers(word: String) {
+        viewModel.searchTerm(word).observe(this, Observer {
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        progressBar.visibility = View.GONE
+                        resource.data?.let { response -> retrieveList(response.definitions) }
+                    }
+                    Status.ERROR -> {
+                        progressBar.visibility = View.GONE
+                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                    }
+                    Status.LOADING -> {
+                        progressBar.visibility = View.VISIBLE
+                    }
+                }
+
             }
         })
+    }
+
+    fun search(word: String) {
+        setupObservers(word)
+        recyclerView.apply {
+            val wordListAdapter = adapter as WordListAdapter
+            wordListAdapter.clearItems()
+            wordListAdapter.notifyDataSetChanged()
+        }
     }
 
     fun retrieveList(words: ArrayList<Word>) {

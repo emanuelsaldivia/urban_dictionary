@@ -4,4 +4,5 @@
     <string name="definition_placeholder">definition</string>
     <string name="author_placeholder">author</string>
     <string name="search_title">Search</string>
+    <string name="unexpected_error">Unexpected error</string>
 </resources>

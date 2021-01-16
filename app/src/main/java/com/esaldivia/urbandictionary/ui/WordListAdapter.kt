@@ -34,4 +34,9 @@ class WordListAdapter(private val wordList: ArrayList<Word>) : RecyclerView.Adap
 
     }
 
+    fun clearItems() {
+        wordList.clear()
+        notifyDataSetChanged()
+    }
+
 }
