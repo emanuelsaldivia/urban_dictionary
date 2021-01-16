@@ -3,4 +3,5 @@
     <string name="word_placeholder">word</string>
     <string name="definition_placeholder">definition</string>
     <string name="author_placeholder">author</string>
+    <string name="search_title">Search</string>
 </resources>

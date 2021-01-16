@@ -3,6 +3,7 @@ package com.esaldivia.urbandictionary.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.esaldivia.urbandictionary.R
@@ -23,7 +24,23 @@ class DicitionaryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dicitionary)
 
+        setupSearchView()
         setupRecyclerView()
+    }
+
+    fun setupSearchView() {
+        searchView.queryHint = applicationContext.getString(R.string.search_title)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                TODO("Not yet implemented")
+                // todo search
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                TODO("Not yet implemented")
+                // todo hint with local db
+            }
+        })
     }
 
     fun setupRecyclerView() {
