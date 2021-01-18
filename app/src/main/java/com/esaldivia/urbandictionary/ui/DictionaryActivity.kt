@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.esaldivia.urbandictionary.R
@@ -16,12 +17,13 @@ import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_dicitionary.*
 import javax.inject.Inject
 
-class DicitionaryActivity : DaggerAppCompatActivity() {
+class DictionaryActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
 
-    val viewModel by viewModels<DictionaryViewModel> { providerFactory }
+    private val viewModel by viewModels<DictionaryViewModel> { providerFactory }
+    private var definitions: ArrayList<Word> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,17 @@ class DicitionaryActivity : DaggerAppCompatActivity() {
 
         setupSearchView()
         setupRecyclerView()
+        setupDictionaryFilters()
+    }
+
+    private fun setupDictionaryFilters() {
+        filterLayout.setOnClickListener {
+            if (viewModel.isOrderedByThumbsUp.value == true) {
+                viewModel.orderByThumbsDown(definitions)
+            } else {
+                viewModel.orderByThumbsUp(definitions)
+            }
+        }
     }
 
     fun setupSearchView() {
@@ -39,6 +52,7 @@ class DicitionaryActivity : DaggerAppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                // After clearing the searchView, the results clear too
                 if (newText.isNullOrBlank()) {
                     setupRecyclerView()
                 }
@@ -56,13 +70,17 @@ class DicitionaryActivity : DaggerAppCompatActivity() {
         }
     }
 
-    fun setupObservers(word: String) {
+    private fun setupObservers(word: String) {
         viewModel.searchTerm(word).observe(this, Observer {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         progressBar.visibility = View.GONE
-                        resource.data?.let { response -> retrieveList(response.definitions) }
+                        resource.data?.let { response ->
+                            definitions = response.definitions
+                            viewModel.orderByThumbsUp(definitions)
+                            retrieveList(definitions)
+                        }
                     }
                     Status.ERROR -> {
                         progressBar.visibility = View.GONE
@@ -75,6 +93,18 @@ class DicitionaryActivity : DaggerAppCompatActivity() {
 
             }
         })
+
+        viewModel.isOrderedByThumbsUp.observe(this, Observer {
+            if (viewModel.isOrderedByThumbsUp.value == true) {
+                votesOrder.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_thumb_up_24))
+            } else {
+                votesOrder.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_baseline_thumb_down_24))
+            }
+        })
+
+        viewModel.definitionsOrder.observe(this, Observer {
+            retrieveList(it!!)
+        })
     }
 
     fun search(word: String) {
@@ -86,7 +116,7 @@ class DicitionaryActivity : DaggerAppCompatActivity() {
         }
     }
 
-    fun retrieveList(words: ArrayList<Word>) {
+    private fun retrieveList(words: ArrayList<Word>) {
         recyclerView.apply {
             adapter = WordListAdapter(words)
             (adapter as WordListAdapter).notifyDataSetChanged()

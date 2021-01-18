@@ -1,6 +1,6 @@
 package com.esaldivia.urbandictionary.di.modules
 
-import com.esaldivia.urbandictionary.ui.DicitionaryActivity
+import com.esaldivia.urbandictionary.ui.DictionaryActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -11,6 +11,6 @@ abstract class ActivityBuildersModule {
         DictionaryViewModelModule::class,
         DictionaryModule::class
     ])
-    abstract fun contributeDictionaryActivity(): DicitionaryActivity
+    abstract fun contributeDictionaryActivity(): DictionaryActivity
 
 }

@@ -3,6 +3,7 @@ package com.esaldivia.urbandictionary.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.esaldivia.urbandictionary.R
 import com.esaldivia.urbandictionary.models.Word
 
 class WordListAdapter(private val wordList: ArrayList<Word>) : RecyclerView.Adapter<WordDefinitionViewHolder>() {
@@ -26,7 +27,7 @@ class WordListAdapter(private val wordList: ArrayList<Word>) : RecyclerView.Adap
 
         holder.definitionTextView.text = word.definition
 
-        holder.authorTextView.text = word.author
+        holder.authorTextView.text = holder.rootView.context.getString(R.string.by_author, word.author)
 
         holder.thumbsUpTextView.text = word.thumbsUp.toString()
 

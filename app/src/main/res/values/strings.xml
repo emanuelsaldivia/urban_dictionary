@@ -5,4 +5,5 @@
     <string name="author_placeholder">author</string>
     <string name="search_title">Search</string>
     <string name="unexpected_error">Unexpected error</string>
+    <string name="by_author">by %s</string>
 </resources>
