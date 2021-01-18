@@ -78,13 +78,23 @@ class DictionaryActivity : DaggerAppCompatActivity() {
                         progressBar.visibility = View.GONE
                         resource.data?.let { response ->
                             definitions = response.definitions
-                            viewModel.orderByThumbsUp(definitions)
+                            if (definitions.size > 0) {
+                                viewModel.orderByThumbsUp(definitions)
+                                recyclerView.visibility = View.VISIBLE
+                                errorMessage.visibility = View.GONE
+                            } else {
+                                recyclerView.visibility = View.GONE
+                                errorMessage.visibility = View.VISIBLE
+                                errorMessage.text = getString(R.string.definition_not_found)
+                            }
                             retrieveList(definitions)
                         }
                     }
                     Status.ERROR -> {
                         progressBar.visibility = View.GONE
-                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                        recyclerView.visibility = View.GONE
+                        errorMessage.visibility = View.VISIBLE
+                        errorMessage.text = getString(R.string.connection_error)
                     }
                     Status.LOADING -> {
                         progressBar.visibility = View.VISIBLE
