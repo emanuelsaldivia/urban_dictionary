@@ -9,11 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import java.lang.Exception
 import javax.inject.Inject
 
-class WordRepository @Inject constructor(private val dictionaryApi: DictionaryApi){
+open class WordRepository @Inject constructor(private val dictionaryApi: DictionaryApi){
 
     suspend fun searchTerm(word: String) = dictionaryApi.searchWord(word)
 
-    fun handleSearch(word: String, context: Context) = liveData(Dispatchers.IO) {
+    open fun handleSearch(word: String, context: Context) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
             emit(Resource.succces(data = searchTerm(word)))
